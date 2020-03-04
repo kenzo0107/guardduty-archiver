@@ -3,13 +3,10 @@ guardduty archiver
 ## Usage
 
 ```
-AWS_PROFILE=hoge go run ./main.go
+go run ./main.go -p <your profile>
 ```
 
 
 ## TODO
 
-For now, I created a working product.
-
-I will deal with it later.
-
+Get available regions for guardduty and execute to archive guardduty findings.
