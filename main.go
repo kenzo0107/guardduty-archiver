@@ -2,27 +2,34 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/endpoints"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/guardduty"
 	"github.com/pkg/errors"
+
+	flag "github.com/spf13/pflag"
 )
 
 var (
-	profileName string = os.Getenv("AWS_PROFILE")
+	helpFlag    bool
+	profileName string
 	sess        *session.Session
 )
 
 func init() {
-	if profileName == "" {
-		profileName = "default"
-	}
+	flag.BoolVarP(&helpFlag, "help", "h", false, "show help message")
+	flag.StringVarP(&profileName, "profile", "p", "default", "aws profile name")
+	flag.Parse()
 }
 
 func main() {
+	if helpFlag {
+		flag.PrintDefaults()
+		return
+	}
+
 	if err := handler(); err != nil {
 		log.Fatal(err)
 	}
@@ -68,14 +75,12 @@ func archiver(sess *session.Session, region string) error {
 			return errors.Wrap(err, "on ListFindings")
 		}
 
-		archiveFindingsOutput, err := guarddutyCli.ArchiveFindings(&guardduty.ArchiveFindingsInput{
+		if _, err := guarddutyCli.ArchiveFindings(&guardduty.ArchiveFindingsInput{
 			DetectorId: detectorID,
 			FindingIds: listFindingsOutput.FindingIds,
-		})
-		if err != nil {
+		}); err != nil {
 			return errors.Wrap(err, "on ArchiveFindings")
 		}
-		log.Println("archiveFindingsOutput", archiveFindingsOutput)
 	}
 	return nil
 }
