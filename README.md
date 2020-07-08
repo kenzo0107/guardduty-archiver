@@ -2,10 +2,18 @@ guardduty archiver
 
 ## Usage
 
+* profile
+
 ```
 go run ./main.go -p <your profile>
 ```
 
+* MFA
+
+```
+awsume <your profile>
+go run ./main.go
+```
 
 ## TODO
 
